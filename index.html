@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1512">
+<title>لبنيني · Lubnēne — Libanesisch-Arabisch lernen</title>
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌲</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="brand" data-nav="#/home">
+    <span class="brand-ar">لبنيني</span>
+    <span class="brand-de">Lubnēne</span>
+  </button>
+  <div class="topbar-right">
+    <div class="streak" id="topStreak" title="Serie"></div>
+    <button class="profile-chip" id="profileChip" title="Profil wechseln"></button>
+  </div>
+</header>
+
+<nav class="tabbar" id="tabbar">
+  <button data-nav="#/home"><span>🏠</span>Start</button>
+  <button data-nav="#/learn"><span>🎯</span>Üben</button>
+  <button data-nav="#/alphabet"><span>ﺃ</span>Schrift</button>
+  <button data-nav="#/grammar"><span>📚</span>Grammatik</button>
+  <button data-nav="#/dialogues"><span>💬</span>Dialoge</button>
+  <button data-nav="#/mywords"><span>✍️</span>Meine Wörter</button>
+  <button data-nav="#/duel"><span>⚔️</span>Duell</button>
+  <button data-nav="#/stats"><span>📊</span>Fortschritt</button>
+</nav>
+
+<main id="view" class="view"></main>
+
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<!-- Daten -->
+<script src="assets/js/data/alphabet.js"></script>
+<script src="assets/js/data/vocab-core.js"></script>
+<script src="assets/js/data/vocab-plus.js"></script>
+<script src="assets/js/data/grammar.js"></script>
+<script src="assets/js/data/dialogues.js"></script>
+<script src="assets/js/data/verbs.js"></script>
+
+<!-- Kern -->
+<script src="assets/js/core/util.js"></script>
+<script src="assets/js/core/store.js"></script>
+<script src="assets/js/core/srs.js"></script>
+<script src="assets/js/core/tts.js"></script>
+<script src="assets/js/core/keyboard.js"></script>
+<script src="assets/js/core/items.js"></script>
+
+<!-- Ansichten -->
+<script src="assets/js/views/home.js"></script>
+<script src="assets/js/views/learn.js"></script>
+<script src="assets/js/views/drill.js"></script>
+<script src="assets/js/views/alphabet.js"></script>
+<script src="assets/js/views/grammar.js"></script>
+<script src="assets/js/views/dialogues.js"></script>
+<script src="assets/js/views/mywords.js"></script>
+<script src="assets/js/views/duel.js"></script>
+<script src="assets/js/views/stats.js"></script>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
