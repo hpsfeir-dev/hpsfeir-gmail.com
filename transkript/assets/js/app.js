@@ -18,6 +18,8 @@ const el = {
   player: $('player'),
   optModel: $('optModel'),
   optLang: $('optLang'),
+  langQuick: $('langQuick'),
+  langMoreToggle: $('langMoreToggle'),
   optTask: $('optTask'),
   optStamps: $('optStamps'),
   modelHint: $('modelHint'),
@@ -142,8 +144,31 @@ function buildOptions() {
       return o;
     }),
   );
+  setLanguage('de');
 
   updateModelHint();
+}
+
+/** Die drei Quick-Sprachen sind die üblichen Verdächtigen — DE/EN/FR. */
+const QUICK_LANGS = ['auto', 'de', 'en', 'fr'];
+
+/** Hebt den passenden Schnellbutton hervor (keinen, falls eine andere Sprache aktiv ist). */
+function syncLangQuickButtons() {
+  const code = el.optLang.value;
+  for (const btn of el.langQuick.querySelectorAll('.seg-btn')) {
+    btn.classList.toggle('is-on', btn.dataset.lang === code);
+  }
+}
+
+/**
+ * Sprache über eine der vier Schnelltasten setzen: Wert übernehmen, Highlight
+ * setzen und zur schmalen Ansicht zurückklappen.
+ */
+function setLanguage(code) {
+  el.optLang.value = code;
+  syncLangQuickButtons();
+  el.optLang.hidden = true;
+  el.langMoreToggle.textContent = 'andere Sprache …';
 }
 
 function updateModelHint() {
@@ -163,7 +188,13 @@ function restoreSettings() {
   const s = load(SETTINGS_KEY, null);
   if (!s) return;
   if (s.model && [...el.optModel.options].some((o) => o.value === s.model)) el.optModel.value = s.model;
-  if (s.language) el.optLang.value = s.language;
+  if (s.language && [...el.optLang.options].some((o) => o.value === s.language)) {
+    el.optLang.value = s.language;
+    syncLangQuickButtons();
+    const isQuick = QUICK_LANGS.includes(s.language);
+    el.optLang.hidden = isQuick;
+    el.langMoreToggle.textContent = isQuick ? 'andere Sprache …' : 'Schnellauswahl';
+  }
   if (s.task) el.optTask.value = s.task;
   if (s.stamps) el.optStamps.value = s.stamps;
   updateModelHint();
@@ -203,10 +234,23 @@ function wireEvents() {
     sel.addEventListener('change', () => save(SETTINGS_KEY, currentSettings()));
   }
 
+  for (const btn of el.langQuick.querySelectorAll('.seg-btn')) {
+    btn.addEventListener('click', () => { setLanguage(btn.dataset.lang); save(SETTINGS_KEY, currentSettings()); });
+  }
+  el.langMoreToggle.addEventListener('click', () => {
+    const showList = el.optLang.hidden;
+    el.optLang.hidden = !showList;
+    el.langMoreToggle.textContent = showList ? 'Schnellauswahl' : 'andere Sprache …';
+    if (showList) el.optLang.focus();
+  });
+  // Aus der vollen Liste ausgewählt -> Schnellbuttons synchron halten (ohne
+  // die Auswahl selbst zu verändern, falls es keine der vier Schnellsprachen ist).
+  el.optLang.addEventListener('change', syncLangQuickButtons);
+
   el.btnRun.addEventListener('click', start);
   el.btnCancel.addEventListener('click', cancel);
 
-  for (const btn of document.querySelectorAll('.seg-btn')) {
+  for (const btn of document.querySelectorAll('#resultCard .seg-btn')) {
     btn.addEventListener('click', () => setView(btn.dataset.view));
   }
 
@@ -418,6 +462,8 @@ function setBusy(busy) {
   el.btnCancel.hidden = !busy;
   el.fileClear.disabled = busy;
   for (const sel of [el.optModel, el.optLang, el.optTask, el.optStamps]) sel.disabled = busy;
+  el.langMoreToggle.disabled = busy;
+  for (const btn of el.langQuick.querySelectorAll('.seg-btn')) btn.disabled = busy;
 }
 
 function showProgress(title, percent, text) {

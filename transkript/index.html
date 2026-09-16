@@ -68,11 +68,18 @@
         <em class="hint" id="modelHint"></em>
       </label>
 
-      <label class="field">
+      <div class="field">
         <span>Sprache</span>
-        <select id="optLang"></select>
-        <em class="hint">„Automatisch" erkennt die Sprache selbst — eine feste Angabe ist meist genauer.</em>
-      </label>
+        <div class="seg seg-lang" id="langQuick" role="group" aria-label="Sprache auswählen">
+          <button type="button" class="seg-btn" data-lang="auto">Automatisch</button>
+          <button type="button" class="seg-btn" data-lang="de">Deutsch</button>
+          <button type="button" class="seg-btn" data-lang="en">Englisch</button>
+          <button type="button" class="seg-btn" data-lang="fr">Französisch</button>
+        </div>
+        <button type="button" class="link-more" id="langMoreToggle">andere Sprache …</button>
+        <select id="optLang" class="lang-more" hidden></select>
+        <em class="hint">„Automatisch" erkennt die Sprache selbst — eine feste Angabe ist meist genauer, besonders bei kurzen oder leisen Aufnahmen.</em>
+      </div>
 
       <label class="field">
         <span>Aufgabe</span>

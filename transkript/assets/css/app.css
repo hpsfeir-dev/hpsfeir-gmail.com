@@ -155,6 +155,28 @@ select:focus, textarea:focus { outline: 2px solid rgba(240,168,76,.55); outline-
 .seg-btn { font: inherit; font-size: .84rem; font-weight: 600; cursor: pointer;
            background: none; border: 0; color: var(--muted); padding: .35rem .85rem; }
 .seg-btn.is-on { background: var(--card-2); color: var(--accent-2); }
+.seg-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Sprach-Schnellauswahl: wächst über die volle Breite und bricht auf schmalen
+   Bildschirmen in zwei Reihen um, statt seitlich abgeschnitten zu werden. */
+.seg-lang {
+  display: flex; flex-wrap: wrap; width: 100%;
+  border-radius: var(--radius-sm); gap: 1px;
+}
+.seg-lang .seg-btn {
+  flex: 1 1 45%; text-align: center; border-radius: 0;
+  padding: .5rem .6rem; white-space: nowrap;
+}
+.seg-lang .seg-btn.is-on { background: var(--accent); color: #221703; }
+
+.link-more {
+  align-self: flex-start; margin-top: .1rem;
+  background: none; border: 0; cursor: pointer; padding: 0;
+  font: inherit; font-size: .8rem; color: var(--cyan); text-decoration: underline;
+  text-decoration-color: rgba(92,200,215,.4); text-underline-offset: 2px;
+}
+.link-more:hover { color: var(--accent-2); }
+select.lang-more { margin-top: .1rem; }
 
 /* ---------- Fortschritt ---------- */
 

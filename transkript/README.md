@@ -57,7 +57,7 @@ Zwei Dinge am Telefon:
 |---|---|
 | **Formate** | MP3, M4A, WAV, OGG, FLAC, WEBM, MP4 — alles, was der Browser abspielen kann |
 | **Länge** | beliebig; die Aufnahme wird in überlappende 30-Sekunden-Fenster zerlegt |
-| **Sprachen** | 25 zur Auswahl, plus automatische Erkennung — Deutsch ist voreingestellt |
+| **Sprachen** | Schnellauswahl Automatisch / Deutsch / Englisch / Französisch, plus 22 weitere über „andere Sprache …“ |
 | **Übersetzen** | statt zu transkribieren direkt ins Englische übersetzen |
 | **Zeitstempel** | pro Abschnitt, pro Wort oder gar nicht |
 | **Mitlesen** | Abschnitt antippen springt im Player an die Stelle, der laufende ist hervorgehoben |
