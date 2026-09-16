@@ -29,6 +29,28 @@ Beim ersten Durchlauf lädt das Sprachmodell herunter (je nach Auswahl 45 MB bis
 800 MB) — dafür braucht es einmalig Internet. Danach liegt es im Browserspeicher
 und die App arbeitet offline.
 
+## Am Handy
+
+Über GitHub Pages veröffentlicht läuft die App auch auf dem Telefon. Im
+Repository einmalig **Settings → Pages → Source: Deploy from a branch** wählen,
+als Branch den Zweig mit dieser App nehmen und speichern. Nach ein bis zwei
+Minuten liegt sie unter
+
+```
+https://hpsfeir-dev.github.io/hpsfeir-gmail.com/transkript/
+```
+
+Über *Teilen → Zum Home-Bildschirm* wird ein Symbol daraus.
+
+Zwei Dinge am Telefon:
+
+- Ohne WebGPU ist **Klein** voreingestellt, weil alles darüber auf einem
+  Handy-Prozessor sehr lange braucht. Neuere iPhones und Android-Geräte
+  bringen WebGPU mit — dann steht oben rechts „GPU" und Mittel oder Groß
+  sind gut machbar.
+- **Bildschirm anlassen.** Wechselst du die App oder sperrst das Telefon,
+  pausiert der Browser die Erkennung.
+
 ## Was sie kann
 
 | | |

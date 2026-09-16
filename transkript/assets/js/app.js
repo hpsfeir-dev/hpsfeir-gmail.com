@@ -1,6 +1,6 @@
 /* Transkript — Oberfläche: Datei annehmen, Worker steuern, Ergebnis zeigen. */
 
-import { MODELS, LANGUAGES, modelById, languageLabel } from './config.js';
+import { MODELS, LANGUAGES, modelById, languageLabel, defaultModelFor } from './config.js';
 import { decodeToMono16k } from './audio.js';
 import { clock, EXPORTS } from './formats.js';
 
@@ -122,12 +122,13 @@ async function hasWebGPU() {
 }
 
 function buildOptions() {
+  const preset = defaultModelFor(state.device);
   el.optModel.replaceChildren(
     ...MODELS.filter((m) => !m.webgpuOnly || state.device === 'webgpu').map((m) => {
       const o = document.createElement('option');
       o.value = m.id;
       o.textContent = m.label;
-      if (m.default) o.selected = true;
+      if (m.id === preset) o.selected = true;
       return o;
     }),
   );
@@ -358,7 +359,7 @@ function onWorkerMessage(event) {
       break;
 
     case 'run-start':
-      showProgress('Wird transkribiert …', 0, 'Das dauert ungefähr so lange wie die Aufnahme selbst — mit GPU deutlich kürzer.');
+      showProgress('Wird transkribiert …', 0, 'Dauert ungefähr so lange wie die Aufnahme selbst, mit GPU deutlich kürzer. Bildschirm anlassen — im Hintergrund pausiert der Browser.');
       el.stream.hidden = false;
       break;
 

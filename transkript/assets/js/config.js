@@ -38,6 +38,14 @@ export function modelById(id) {
 }
 
 /**
+ * Voreinstellung nach Leistung: ohne WebGPU rechnet der Prozessor, und auf
+ * einem Handy ist dann alles über „Klein" quälend langsam.
+ */
+export function defaultModelFor(device) {
+  return device === 'webgpu' ? 'onnx-community/whisper-base' : 'onnx-community/whisper-tiny';
+}
+
+/**
  * Zahlenformat der Gewichte. Auf der GPU bleibt der Encoder hochauflösend,
  * der Decoder wird quantisiert; auf der CPU ist alles q8.
  */
