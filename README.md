@@ -118,6 +118,15 @@ Deck folgen — jeder Eintrag braucht `id`, `deck`, `ar`, `tr`, `de`, optional
 
 ---
 
+## Auch in diesem Repository
+
+**[🎙️ Transkript](transkript/)** — eine eigenständige zweite App: zieht Text aus
+MP3 und anderen Audiodateien, ebenfalls komplett im Browser. Nützlich, wenn du
+eine Aufnahme mitschreiben willst, statt sie nur zu hören. Details in
+[transkript/README.md](transkript/README.md).
+
+---
+
 Das ausführliche Konzept dahinter steht in [KONZEPT.md](KONZEPT.md).
 
 *Yalla — shwayy shwayy betṣīr.* 🌲
