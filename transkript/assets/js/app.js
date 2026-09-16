@@ -334,13 +334,17 @@ async function start() {
   el.stream.textContent = '';
   el.resultCard.hidden = true;
 
+  state.decodeAbort = new AbortController();
   let audio;
   try {
-    const decoded = await decodeToMono16k(state.file);
+    const decoded = await decodeToMono16k(state.file, {
+      onStatus: handleDecodeStatus,
+      signal: state.decodeAbort.signal,
+    });
     audio = decoded.samples;
     state.duration = decoded.duration;
   } catch (err) {
-    fail(err?.message || 'Die Datei konnte nicht gelesen werden.');
+    if (err?.name !== 'AbortError') fail(err?.message || 'Die Datei konnte nicht gelesen werden.');
     return;
   }
 
@@ -370,11 +374,27 @@ async function start() {
 }
 
 function cancel() {
+  state.decodeAbort?.abort();
   state.worker?.terminate();
   state.worker = null;
   setBusy(false);
   el.progressCard.hidden = true;
   toast('Abgebrochen.');
+}
+
+/** Fortschritt aus dem Wiedergabe-Notweg in audio.js (nur bei hartnäckigen Dateien). */
+function handleDecodeStatus(info) {
+  if (info.stage === 'fallback-start') {
+    showProgress(
+      'Datei wird über die Wiedergabe gelesen …',
+      0,
+      'Dieses Format lehnt den schnellen Weg ab — der Umweg dauert etwa so lange wie die Aufnahme selbst. Bildschirm anlassen.',
+    );
+  } else if (info.stage === 'fallback-progress') {
+    const pct = info.total > 0 ? Math.min(99, (info.current / info.total) * 100) : 0;
+    el.progressBar.style.width = `${pct}%`;
+    el.progressText.textContent = `${clock(info.current)} von ${clock(info.total)} gelesen`;
+  }
 }
 
 function onWorkerMessage(event) {

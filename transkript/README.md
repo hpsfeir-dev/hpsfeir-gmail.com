@@ -87,7 +87,12 @@ Werbeblocker und strenge Firmennetze blockieren gelegentlich `cdn.jsdelivr.net`
 oder `huggingface.co`.
 
 **„Format nicht lesbar"** — der Browser kann die Datei nicht dekodieren. MP3,
-M4A, WAV, OGG und FLAC gehen überall.
+M4A, WAV, OGG und FLAC gehen überall. Manche M4A-Dateien aus Diktiergeräte-Apps
+(mono, niedrige Bitrate) lehnt Chromes schneller Weg zwar ab, lassen sich aber
+noch normal abspielen — die App merkt das und liest sie stattdessen über die
+Wiedergabe mit. Das dauert dann spürbar länger, ungefähr so lange wie die
+Aufnahme selbst (Bildschirm anlassen), zeigt aber einen eigenen Fortschritt
+an. Nur wenn auch das fehlschlägt, kommt diese Meldung.
 
 **Der erste Durchlauf ist zäh, der zweite schnell** — so soll es sein: das
 Modell wird nur einmal geladen.
