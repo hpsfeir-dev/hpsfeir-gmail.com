@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#161312">
+<title>Noten — Melodie aus Audio</title>
+<meta name="description" content="Aus einer Audiodatei automatisch ein Notenblatt erzeugen. Läuft lokal im Browser, ohne Upload.">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎼</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">🎼</span>
+    <span class="brand-text">
+      <strong>Noten</strong>
+      <small>Melodie aus Audio — lokal im Browser</small>
+    </span>
+  </div>
+  <div class="topbar-right">
+    <a class="badge link" href="../transkript/">🎙️ Text statt Noten?</a>
+  </div>
+</header>
+
+<main class="view">
+
+  <section class="card warn" id="fileProtoWarn" hidden>
+    <h3>Diese Seite braucht einen kleinen Webserver</h3>
+    <p class="small">
+      Direkt aus dem Dateisystem geöffnet (<code>file://</code>) darf der Browser
+      Modelle nicht laden. Im Projektordner kurz einen Server starten:
+    </p>
+    <pre><code>python3 -m http.server 8000</code></pre>
+    <p class="small">… und dann <code>http://localhost:8000/noten/</code> öffnen.</p>
+  </section>
+
+  <section class="card note">
+    <p class="small">
+      <strong>Was das hier ist, und was nicht:</strong> Eine automatische
+      Tonhöhenerkennung schätzt Melodie und Akkorde aus der Aufnahme und
+      zeichnet sie als Notenblatt. Tempo und Taktart gibst du vor — erkannt
+      werden sie nicht. Das Ergebnis ist ein <strong>Entwurf zum
+      Nachbessern</strong>, keine fehlerfreie Transkription — das schafft
+      kein automatisches System zuverlässig, auch bezahlte nicht. Am besten
+      bei einer klaren Einzelstimme (Gesang, ein Instrument).
+    </p>
+  </section>
+
+  <section class="card">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Audiodatei auswählen oder hierher ziehen">
+      <div class="drop-icon">🎵</div>
+      <div class="drop-main">Audiodatei hierher ziehen</div>
+      <div class="drop-sub">oder tippen zum Auswählen — MP3, M4A, WAV, OGG, FLAC</div>
+      <input type="file" id="fileInput" accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac,.webm,.mp4" hidden>
+    </div>
+
+    <div class="filebar" id="fileBar" hidden>
+      <div class="filebar-info">
+        <div class="filebar-name" id="fileName"></div>
+        <div class="filebar-meta small muted" id="fileMeta"></div>
+      </div>
+      <button class="btn ghost small" id="fileClear">Entfernen</button>
+    </div>
+
+    <audio id="player" controls hidden></audio>
+  </section>
+
+  <section class="card">
+    <h2>Einstellungen</h2>
+    <div class="grid">
+      <label class="field">
+        <span>Tempo (BPM)</span>
+        <input type="number" id="optBpm" min="30" max="300" step="1" value="100">
+        <em class="hint">Schläge pro Minute. Falsch geschätzt, verrutschen Notenwerte — lieber hinterher
+          anpassen als hier raten, wenn unsicher.</em>
+      </label>
+
+      <label class="field">
+        <span>Taktart</span>
+        <select id="optBeats">
+          <option value="2">2/4</option>
+          <option value="3">3/4</option>
+          <option value="4" selected>4/4</option>
+          <option value="6">6/4</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Empfindlichkeit</span>
+        <select id="optSensitivity">
+          <option value="0.14">Streng — nur klare Töne</option>
+          <option value="0.08" selected>Normal</option>
+          <option value="0.04">Empfindlich — auch leise Töne</option>
+        </select>
+        <em class="hint">Zu empfindlich eingestellt, schleichen sich falsche Kurztöne ein.</em>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="btnRun" disabled>In Noten umwandeln</button>
+      <button class="btn danger" id="btnCancel" hidden>Abbrechen</button>
+    </div>
+
+    <p class="small muted note">
+      Alles läuft auf diesem Gerät — die Audiodatei verlässt den Browser nicht.
+      Rechnet auf dem Prozessor (nicht der Grafikkarte), das braucht etwas Geduld.
+    </p>
+  </section>
+
+  <section class="card" id="progressCard" hidden>
+    <h2 id="progressTitle">Arbeitet …</h2>
+    <div class="bar"><div class="bar-fill" id="progressBar"></div></div>
+    <div class="small muted" id="progressText"></div>
+  </section>
+
+  <section class="card" id="resultCard" hidden>
+    <div class="card-head">
+      <h2>Notenblatt</h2>
+    </div>
+    <div class="result-meta small muted" id="resultMeta"></div>
+    <div class="score-scroll"><div id="score"></div></div>
+    <div class="actions wrap">
+      <button class="btn ghost" id="btnDlSvg">als SVG</button>
+      <button class="btn ghost" id="btnDlPng">als PNG</button>
+      <button class="btn ghost" id="btnDlXml">als MusicXML</button>
+    </div>
+    <p class="small muted note">
+      MusicXML öffnest du in <a href="https://musescore.org/" target="_blank" rel="noopener">MuseScore</a>
+      (kostenlos) oder ähnlichen Programmen weiter — zum Korrigieren, Transponieren oder als MIDI exportieren.
+    </p>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" hidden></div>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

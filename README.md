@@ -118,6 +118,21 @@ Deck folgen — jeder Eintrag braucht `id`, `deck`, `ar`, `tr`, `de`, optional
 
 ---
 
+## Auch in diesem Repository
+
+**[🎙️ Transkript](transkript/)** — eine eigenständige zweite App: zieht Text aus
+MP3 und anderen Audiodateien, ebenfalls komplett im Browser. Nützlich, wenn du
+eine Aufnahme mitschreiben willst, statt sie nur zu hören. Details in
+[transkript/README.md](transkript/README.md).
+
+**[🎼 Noten](noten/)** — eine dritte App: schätzt aus einer Audiodatei Melodie
+und Akkorde und zeichnet ein Notenblatt (SVG/PNG/MusicXML), ebenfalls lokal im
+Browser. Ein Entwurf zum Nachbessern, keine fehlerfreie Transkription — das
+kann derzeit kein automatisches System zuverlässig. Details in
+[noten/README.md](noten/README.md).
+
+---
+
 Das ausführliche Konzept dahinter steht in [KONZEPT.md](KONZEPT.md).
 
 *Yalla — shwayy shwayy betṣīr.* 🌲

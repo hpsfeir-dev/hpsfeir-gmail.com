@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<title>Transkript — Text aus MP3</title>
+<meta name="description" content="MP3 und andere Audiodateien im Browser transkribieren. Läuft lokal auf dem Gerät, ohne Upload.">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">🎙️</span>
+    <span class="brand-text">
+      <strong>Transkript</strong>
+      <small>Text aus MP3 — lokal im Browser</small>
+    </span>
+  </div>
+  <div class="topbar-right">
+    <span class="badge" id="deviceBadge" title="Rechenweg">…</span>
+  </div>
+</header>
+
+<main class="view">
+
+  <!-- Hinweis, wenn die Seite per Doppelklick geöffnet wurde -->
+  <section class="card warn" id="fileProtoWarn" hidden>
+    <h3>Diese Seite braucht einen kleinen Webserver</h3>
+    <p class="small">
+      Direkt aus dem Dateisystem geöffnet (<code>file://</code>) darf der Browser die
+      Spracherkennung nicht laden. Starte im Ordner des Projekts kurz einen Server:
+    </p>
+    <pre><code>python3 -m http.server 8000</code></pre>
+    <p class="small">… und öffne dann <code>http://localhost:8000/transkript/</code>.</p>
+  </section>
+
+  <!-- 1 · Datei -->
+  <section class="card">
+    <div class="drop" id="drop" tabindex="0" role="button"
+         aria-label="Audiodatei auswählen oder hierher ziehen">
+      <div class="drop-icon">🎧</div>
+      <div class="drop-main">Audiodatei hierher ziehen</div>
+      <div class="drop-sub">oder tippen zum Auswählen — MP3, M4A, WAV, OGG, FLAC, WEBM</div>
+      <input type="file" id="fileInput" accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac,.webm,.mp4" hidden>
+    </div>
+
+    <div class="filebar" id="fileBar" hidden>
+      <div class="filebar-info">
+        <div class="filebar-name" id="fileName"></div>
+        <div class="filebar-meta small muted" id="fileMeta"></div>
+      </div>
+      <button class="btn ghost small" id="fileClear">Entfernen</button>
+    </div>
+
+    <audio id="player" controls hidden></audio>
+  </section>
+
+  <!-- 2 · Einstellungen -->
+  <section class="card">
+    <h2>Einstellungen</h2>
+    <div class="grid">
+      <label class="field">
+        <span>Modell</span>
+        <select id="optModel"></select>
+        <em class="hint" id="modelHint"></em>
+      </label>
+
+      <div class="field">
+        <span>Sprache</span>
+        <div class="seg seg-lang" id="langQuick" role="group" aria-label="Sprache auswählen">
+          <button type="button" class="seg-btn" data-lang="auto">Automatisch</button>
+          <button type="button" class="seg-btn" data-lang="de">Deutsch</button>
+          <button type="button" class="seg-btn" data-lang="en">Englisch</button>
+          <button type="button" class="seg-btn" data-lang="fr">Französisch</button>
+        </div>
+        <button type="button" class="link-more" id="langMoreToggle">andere Sprache …</button>
+        <select id="optLang" class="lang-more" hidden></select>
+        <em class="hint">„Automatisch" erkennt die Sprache selbst — eine feste Angabe ist meist genauer, besonders bei kurzen oder leisen Aufnahmen.</em>
+      </div>
+
+      <label class="field">
+        <span>Aufgabe</span>
+        <select id="optTask">
+          <option value="transcribe">Transkribieren (Originalsprache)</option>
+          <option value="translate">Ins Englische übersetzen</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Zeitstempel</span>
+        <select id="optStamps">
+          <option value="segment">pro Abschnitt</option>
+          <option value="word">pro Wort</option>
+          <option value="off">keine</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="btnRun" disabled>Transkribieren</button>
+      <button class="btn danger" id="btnCancel" hidden>Abbrechen</button>
+    </div>
+
+    <p class="small muted note">
+      Alles läuft auf diesem Gerät — die Audiodatei verlässt den Browser nicht.
+      Nur das Sprachmodell wird beim ersten Mal heruntergeladen und danach im
+      Browser zwischengespeichert.
+    </p>
+  </section>
+
+  <!-- 3 · Fortschritt -->
+  <section class="card" id="progressCard" hidden>
+    <h2 id="progressTitle">Arbeitet …</h2>
+    <div class="bar"><div class="bar-fill" id="progressBar"></div></div>
+    <div class="small muted" id="progressText"></div>
+    <div class="stream" id="stream" hidden></div>
+  </section>
+
+  <!-- 4 · Ergebnis -->
+  <section class="card" id="resultCard" hidden>
+    <div class="card-head">
+      <h2>Transkript</h2>
+      <div class="seg" role="group" aria-label="Ansicht">
+        <button class="seg-btn is-on" data-view="segments">Abschnitte</button>
+        <button class="seg-btn" data-view="text">Fließtext</button>
+      </div>
+    </div>
+
+    <div class="result-meta small muted" id="resultMeta"></div>
+
+    <div id="segments" class="segments"></div>
+    <textarea id="plainText" class="plain" spellcheck="false" hidden></textarea>
+
+    <div class="actions wrap">
+      <button class="btn" id="btnCopy">Kopieren</button>
+      <button class="btn ghost" data-dl="txt">.txt</button>
+      <button class="btn ghost" data-dl="srt">.srt</button>
+      <button class="btn ghost" data-dl="vtt">.vtt</button>
+      <button class="btn ghost" data-dl="md">.md</button>
+      <button class="btn ghost" data-dl="json">.json</button>
+    </div>
+  </section>
+
+  <!-- 5 · Verlauf -->
+  <section class="card" id="historyCard" hidden>
+    <div class="card-head">
+      <h2>Verlauf</h2>
+      <button class="btn ghost small" id="historyClear">Leeren</button>
+    </div>
+    <div id="historyList" class="history"></div>
+    <p class="small muted note">Liegt nur im Speicher dieses Browsers.</p>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" hidden></div>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
